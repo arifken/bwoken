@@ -10,9 +10,9 @@ module Bwoken
         new.format_build stdout
       end
 
-      def on name, &block
+      def on(name, formatter=nil, &block)
         define_method "_on_#{name}_callback" do |*line|
-          block.call(*line)
+          block.call(*line, formatter)
         end
       end
 
@@ -28,26 +28,26 @@ module Bwoken
     def line_demuxer line, exit_status
       if line =~ /Instruments Trace Error/
         exit_status = 1
-        _on_fail_callback(line)
+        _on_fail_callback(line,self)
       elsif line =~ /^\d{4}/
         tokens = line.split(' ')
 
         if tokens[3] =~ /Pass/
-          _on_pass_callback(line)
+          _on_pass_callback(line,self)
         elsif tokens[3] =~ /Start/
-          _on_start_callback(line)
+          _on_start_callback(line,self)
         elsif tokens[3] =~ /Fail/ || line =~ /Script threw an uncaught JavaScript error/
           exit_status = 1
-          _on_fail_callback(line)
+          _on_fail_callback(line,self)
         elsif tokens[3] =~ /Error/
-          _on_error_callback(line)
+          _on_error_callback(line,self)
         else
-          _on_debug_callback(line)
+          _on_debug_callback(line, self)
         end
       elsif line =~ /Instruments Trace Complete/
-        _on_complete_callback(line)
+        _on_complete_callback(line,self)
       else
-        _on_other_callback(line)
+        _on_other_callback(line,self)
       end
       exit_status
     end
@@ -73,7 +73,7 @@ module Bwoken
       stdout.each_line do |line|
         out_string << line
         if line.length > 1
-          _on_build_line_callback(line)
+          _on_build_line_callback(line,self)
         end
       end
       out_string

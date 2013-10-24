@@ -48,7 +48,7 @@ module Bwoken
     end
 
     def run
-      formatter.before_script_run path
+      formatter.before_script_run path, formatter
 
       Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         exit_status = formatter.format stdout

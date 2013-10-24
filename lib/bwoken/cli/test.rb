@@ -10,6 +10,7 @@ require 'bwoken/device'
 require 'bwoken/formatter'
 require 'bwoken/formatters/passthru_formatter'
 require 'bwoken/formatters/colorful_formatter'
+require 'bwoken/formatters/junit_formatter'
 require 'bwoken/script_runner'
 
 module Bwoken
@@ -115,6 +116,7 @@ BANNER
       def select_formatter formatter_name
         case formatter_name
         when 'passthru' then Bwoken::PassthruFormatter.new
+        when 'junit' then Bwoken::JUnitFormatter.new
         else Bwoken::ColorfulFormatter.new
         end
       end
