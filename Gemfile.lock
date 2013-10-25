@@ -6,6 +6,7 @@ PATH
       colorful
       execjs
       json_pure
+      nokogiri
       rake
       slop
 
@@ -15,14 +16,17 @@ GEM
     coffee-script-source (1.6.3)
     colorful (0.0.3)
     diff-lcs (1.2.1)
-    execjs (2.0.1)
+    execjs (2.0.2)
     ffi (1.0.11)
     guard (1.0.1)
       ffi (>= 0.5.0)
       thor (~> 0.14.6)
     guard-rspec (0.6.0)
       guard (>= 0.10.0)
-    json_pure (1.8.0)
+    json_pure (1.8.1)
+    mini_portile (0.5.1)
+    nokogiri (1.6.0)
+      mini_portile (~> 0.5.0)
     rake (10.1.0)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
@@ -41,4 +45,5 @@ PLATFORMS
 DEPENDENCIES
   bwoken!
   guard-rspec
+  nokogiri
   rspec
