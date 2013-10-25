@@ -90,8 +90,10 @@ module Bwoken
 
       test_suite = formatter.test_suites.last
       test_case = test_suite.test_cases.last
-      test_case.complete
-      test_case.error = tokens[4..-1].join(' ')
+      if test_case
+        test_case.complete
+        test_case.error = tokens[4..-1].join(' ')
+      end
 
       test_suite.errors += 1
 
@@ -103,8 +105,10 @@ module Bwoken
 
       test_suite = formatter.test_suites.last
       test_case = test_suite.test_cases.last
-      test_case.complete
-      test_case.error = tokens[4..-1].join(' ')
+      if test_case
+        test_case.complete
+        test_case.error = tokens[4..-1].join(' ')
+      end
 
       test_suite.failures += 1
 
@@ -129,7 +133,9 @@ module Bwoken
       tokens = line.split(' ')
 
       test_case = formatter.test_suites.last.test_cases.last
-      test_case.error = nil
+      if test_case
+        test_case.error = nil
+      end
     end
 
     on :before_script_run do |path, formatter|
