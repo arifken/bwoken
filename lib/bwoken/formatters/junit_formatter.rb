@@ -65,19 +65,16 @@ module Bwoken
 
     on :complete do |line,formatter|
       tokens = line.split(' ')
-      puts %Q( \n#{'Complete'.send(@failed ? :red : :green)}\n Duration: #{tokens[5].sub(';', '').underline.bold}\n )
-
       test_suite = formatter.test_suites.last
       test_suite.time = tokens[5].sub(';', '')
     end
 
     on :debug do |line, formatter|
-      filtered_line = line.sub(/(target\.frontMostApp.+)\.tap\(\)/, "#{'tap'.yellow} \\1")
-      filtered_line = filtered_line.gsub(/\[("[^\]]*")\]/, "[" + '\1'.magenta + "]")
+      filtered_line = line.sub(/(target\.frontMostApp.+)\.tap\(\)/, "#{'tap'} \\1")
+      filtered_line = filtered_line.gsub(/\[("[^\]]*")\]/, "[" + '\1' + "]")
       filtered_line = filtered_line.gsub('()', '')
       filtered_line = filtered_line.sub(/target.frontMostApp.(?:mainWindow.)?/, '')
       tokens = filtered_line.split(' ')
-      puts "#{tokens[3].cyan}\t#{tokens[4..-1].join(' ')}"
 
       test_suite = formatter.test_suites.last
       test_case = test_suite.test_cases.last
@@ -90,7 +87,6 @@ module Bwoken
     on :error do |line,formatter|
       @failed = true
       tokens = line.split(' ')
-      puts "#{tokens[3].bold.red}\t#{tokens[4..-1].join(' ').underline.bold}"
 
       test_suite = formatter.test_suites.last
       test_case = test_suite.test_cases.last
@@ -104,7 +100,6 @@ module Bwoken
     on :fail do |line,formatter|
       @failed = true
       tokens = line.split(' ')
-      puts "#{tokens[3].bold.red}\t#{tokens[4..-1].join(' ').underline.bold}"
 
       test_suite = formatter.test_suites.last
       test_case = test_suite.test_cases.last
@@ -117,7 +112,6 @@ module Bwoken
 
     on :start do |line,formatter|
       tokens = line.split(' ')
-      puts "#{tokens[3].cyan}\t#{tokens[4..-1].join(' ')}"
 
       suite = formatter.test_suites.last
       if suite
@@ -133,7 +127,6 @@ module Bwoken
 
     on :pass do |line,formatter|
       tokens = line.split(' ')
-      puts "#{tokens[3].green}\t#{tokens[4..-1].join(' ')}"
 
       test_case = formatter.test_suites.last.test_cases.last
       test_case.error = nil
@@ -147,35 +140,31 @@ module Bwoken
       new_suite.host_name = tokens[-2]
       new_suite.name = tokens[-1]
       new_suite.package = new_suite.name
-      #puts "self #{self}"
-      #puts "formatter.test_suites: #{self.all_test_suites}"
       new_suite.id = formatter.test_suites.count + 1
 
       formatter.test_suites << new_suite
 
       @failed = false
-      puts
-      puts "#{tokens[-2]}\t#{tokens[-1]}".cyan
     end
 
     on :before_build_start do
-      print "Building".blue
+      print "Building"
     end
 
     on :build_line do |line,formatter|
-      print '.'.blue
+      print '.'
     end
 
     on :build_successful do |line,formatter|
       puts
-      puts 'Build Successful!'.green
+      puts 'Build Successful!'
     end
 
     on :build_failed do |build_log, error_log|
       puts build_log
-      puts 'Standard Error:'.yellow
+      puts 'Standard Error:'
       puts error_log
-      puts 'Build failed!'.red
+      puts 'Build failed!'
     end
 
     on :other do |line,formatter|
@@ -184,8 +173,6 @@ module Bwoken
 
 
     def generate_report
-      puts
-      puts 'GENERATING REPORT'
       doc = Nokogiri::XML::Document.new()
       root = Nokogiri::XML::Element.new('testsuites', doc)
       doc.add_child(root)
@@ -234,16 +221,18 @@ module Bwoken
 
       end
 
-      output_path = File.join(Bwoken.results_path,"#{result_name}_results.xml")
+      out_xml = doc.to_xml
+
+      write_results(out_xml, result_name)
+    end
+
+    def write_results(xml, suite_name)
+      output_path = File.join(Bwoken.results_path, "#{suite_name}_results.xml")
       File.open(output_path, 'w+') do |io|
-        io.write(doc.to_xml)
+        io.write(xml)
       end
 
-      File.read(output_path) + "\nJUnit report generated to #{output_path}"
-
-
-      puts 'DONE GENERATING REPORT'
-
+      puts "\nJUnit report generated to #{output_path}\n\n"
     end
 
 
