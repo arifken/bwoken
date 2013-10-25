@@ -40,7 +40,7 @@ describe Bwoken::Formatter do
 
     context 'for a passing line' do
       it 'calls _on_pass_callback' do
-        subject.should_receive(:_on_pass_callback).with('1234 a a Pass')
+        subject.should_receive(:_on_pass_callback).with('1234 a a Pass', subject)
         subject.line_demuxer('1234 a a Pass', 0)
       end
       it 'returns 0' do
@@ -55,7 +55,7 @@ describe Bwoken::Formatter do
     context 'for a failing line' do
       context 'Fail error' do
         it 'calls _on_fail_callback' do
-          subject.should_receive(:_on_fail_callback).with('1234 a a Fail')
+          subject.should_receive(:_on_fail_callback).with('1234 a a Fail', subject)
           subject.line_demuxer('1234 a a Fail', 0)
         end
       end
@@ -63,7 +63,7 @@ describe Bwoken::Formatter do
       context 'Instruments Trace Error message' do
         it 'calls _on_fail_callback' do
           msg = 'Instruments Trace Error foo'
-          subject.should_receive(:_on_fail_callback).with(msg)
+          subject.should_receive(:_on_fail_callback).with(msg, subject)
           subject.line_demuxer(msg, 0)
         end
       end
@@ -79,14 +79,14 @@ describe Bwoken::Formatter do
 
     context 'for a debug line' do
       it 'calls _on_debug_callback' do
-        subject.should_receive(:_on_debug_callback).with('1234 a a feh')
+        subject.should_receive(:_on_debug_callback).with('1234 a a feh', subject)
         subject.line_demuxer('1234 a a feh', 0)
       end
     end
 
     context 'for any other line' do
       it 'calls _on_other_callback' do
-        subject.should_receive(:_on_other_callback).with('blah blah blah')
+        subject.should_receive(:_on_other_callback).with('blah blah blah', subject)
         subject.line_demuxer('blah blah blah', 0)
       end
     end

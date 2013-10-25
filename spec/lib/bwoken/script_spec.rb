@@ -21,7 +21,7 @@ describe Bwoken::Script do
 
     it 'outputs that a script is about to run' do
       subject.path = 'path'
-      subject.formatter.should_receive(:before_script_run).with('path')
+      subject.formatter.should_receive(:before_script_run).with('path', subject.formatter)
       Open3.stub(:popen3)
       subject.stub(:cmd)
       subject.run
