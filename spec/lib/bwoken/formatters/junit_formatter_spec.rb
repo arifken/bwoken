@@ -47,7 +47,7 @@ describe Bwoken::JUnitFormatter do
     it 'increments tests counter when a test is run' do
       formatter = Bwoken::JUnitFormatter.new
       formatter.test_suites = [Bwoken::JUnitTestSuite.new]
-      formatter._on_start_callback('2013-10-25 16:10:01 +0000 Start: test one',formatter)
+      formatter._on_start_callback('2013-10-25 16:10:01 +0000 Start: test one', formatter)
       expect(formatter.test_suites[0].tests).to eq(1)
     end
 
@@ -57,7 +57,7 @@ describe Bwoken::JUnitFormatter do
       test_case = Bwoken::JUnitTestCase.new
       test_case.start_time = Time.now
       formatter.test_suites[0].test_cases = [test_case]
-      formatter._on_fail_callback('2013-10-25 16:10:01 +0000 Fail: login',formatter)
+      formatter._on_fail_callback('2013-10-25 16:10:01 +0000 Fail: login', formatter)
       expect(formatter.test_suites[0].failures).to eq(1)
     end
 
@@ -67,7 +67,7 @@ describe Bwoken::JUnitFormatter do
       test_case = Bwoken::JUnitTestCase.new
       test_case.start_time = Time.now
       formatter.test_suites[0].test_cases = [test_case]
-      formatter._on_error_callback('2013-10-25 16:10:01 +0000 Error: login',formatter)
+      formatter._on_error_callback('2013-10-25 16:10:01 +0000 Error: login', formatter)
       expect(formatter.test_suites[0].errors).to eq(1)
     end
   end
@@ -77,7 +77,7 @@ describe Bwoken::JUnitFormatter do
     it 'outputs a valid XML report for test suites' do
       # Setup
       #===================================================================================================================
-      now = Time.new(2013,10,25,10,34,51,'-05:00')
+      now = Time.new(2013, 10, 25, 10, 34, 51, '-05:00')
 
       test_suite = Bwoken::JUnitTestSuite.new
       test_suite.id = 'suite id'
@@ -109,35 +109,46 @@ describe Bwoken::JUnitFormatter do
       subject.test_suites = [test_suite]
 
 
-
       # Assert
       #===================================================================================================================
       subject.stub(:write_results) do |xml, suite_name|
 
         expect(xml).to be_kind_of(String)
 
-        #check the test suite
-        expect(xml.scan( /testsuite\sid="([^"]+)"/ )[0]).to include('suite id')
-        expect(xml.scan( /hostname="([^"]+)"/ )[0]).to include('suite host_name')
-        expect(xml.scan( /testsuite.*name="([^"]+)"/ )[0]).to include('suite_name.js')
-        expect(xml.scan( /testsuite.*tests="([^"]+)"/ )[0]).to include('2')
-        expect(xml.scan( /testsuite.*failures="([^"]+)"/ )[0]).to include('1')
-        expect(xml.scan( /testsuite.*errors="([^"]+)"/ )[0]).to include('1')
-        expect(xml.scan( /testsuite.*time="([^"]+)"/ )[0]).to include('10.0')
-        expect(xml.scan( /testsuite.*timestamp="([^"]+)"/ )[0]).to include('2013-10-25 10:34:51 -0500')
+        # Check the test suite
+        expect(xml.scan(/testsuite\sid="([^"]+)"/)[0]).to include('suite id')
+        expect(xml.scan(/hostname="([^"]+)"/)[0]).to include('suite host_name')
+        expect(xml.scan(/testsuite.*name="([^"]+)"/)[0]).to include('suite_name.js')
+        expect(xml.scan(/testsuite.*tests="([^"]+)"/)[0]).to include('2')
+        expect(xml.scan(/testsuite.*failures="([^"]+)"/)[0]).to include('1')
+        expect(xml.scan(/testsuite.*errors="([^"]+)"/)[0]).to include('1')
+        expect(xml.scan(/testsuite.*time="([^"]+)"/)[0]).to include('10.0')
+        expect(xml.scan(/testsuite.*timestamp="([^"]+)"/)[0]).to include('2013-10-25 10:34:51 -0500')
 
-        #check the test cases
-        expect(xml.scan( /testcase.*\sname="([^"]+)"/ )[0]).to include('test one')
-        expect(xml.scan( /testcase.*\sclassname="([^"]+)"/ )[0]).to include('TestOne')
-        expect(xml.scan( /testcase.*\stime="([^"]+)"/ )[0]).to include('3.0')
+        # Check the test cases
+        expect(xml.scan(/testcase.*\sname="([^"]+)"/)[0]).to include('test one')
+        expect(xml.scan(/testcase.*\sclassname="([^"]+)"/)[0]).to include('TestOne')
+        expect(xml.scan(/testcase.*\stime="([^"]+)"/)[0]).to include('3.0')
 
-        expect(xml.scan( /testcase.*\sname="([^"]+)"/ )[1]).to include('test two')
-        expect(xml.scan( /testcase.*\sclassname="([^"]+)"/ )[1]).to include('TestTwo')
-        expect(xml.scan( /testcase.*\stime="([^"]+)"/ )[1]).to include('5.0')
+        expect(xml.scan(/testcase.*\sname="([^"]+)"/)[1]).to include('test two')
+        expect(xml.scan(/testcase.*\sclassname="([^"]+)"/)[1]).to include('TestTwo')
+        expect(xml.scan(/testcase.*\stime="([^"]+)"/)[1]).to include('5.0')
 
-        #check stdout for logs
-        expect(xml.scan( /system-out.*\n.*\n.*test one logs/ )).to have(1).items
-        expect(xml.scan( /system-err.*\n.*\n.*test two logs/ )).to have(1).items
+        # Check stdout for logs
+        expect(xml.scan(/system-out.*\n.*\n.*test one logs/)).to have(1).items
+        expect(xml.scan(/system-err.*\n.*\n.*test two logs/)).to have(1).items
+
+        # Ensure that the resultant document passes XSD validation
+        xsd = Nokogiri::XML::Schema(File.read(File.expand_path("#{File.dirname(__FILE__)}/../../../support/junit-4.xsd")))
+        doc = Nokogiri::XML(xml)
+
+        errors = []
+        xsd.validate(doc).each do |error|
+          puts "Error: #{error}"
+          errors << error
+        end
+
+        expect(errors).to have(0).items
 
       end
 

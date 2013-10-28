@@ -134,6 +134,7 @@ module Bwoken
 
       test_case = formatter.test_suites.last.test_cases.last
       if test_case
+        test_case.complete
         test_case.error = nil
       end
     end
