@@ -6,6 +6,7 @@ module Bwoken
     attr_accessor :focus
     attr_accessor :formatter
     attr_accessor :app_dir
+    attr_accessor :family
 
     alias_method :feature_names, :focus
 
@@ -18,7 +19,7 @@ module Bwoken
     end
 
     def device_family
-      Device.device_type
+      family != nil ? family : Device.device_type
     end
 
     def scripts

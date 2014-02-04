@@ -57,6 +57,7 @@ module Bwoken
 
     def runner_for_device
       DeviceRunner.new do |dr|
+        dr.family = family
         dr.focus = focus
         dr.formatter = formatter
         dr.app_dir = app_dir
