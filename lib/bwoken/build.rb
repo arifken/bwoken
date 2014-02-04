@@ -1,13 +1,16 @@
 require 'open3'
 require 'bwoken'
 require 'bwoken/device'
+require 'fileutils'
 
 module Bwoken
   class BuildFailedError < RuntimeError; end
 
   class Build
+    attr_accessor :bundle_id
 
     class << self
+
       def build_path
         File.join(Bwoken.project_path, 'build')
       end
@@ -36,6 +39,7 @@ module Bwoken
     attr_accessor :configuration
     attr_accessor :sdk_version
     attr_accessor :verbose
+
 
     def initialize
       #self.flags = [] #TODO: implement

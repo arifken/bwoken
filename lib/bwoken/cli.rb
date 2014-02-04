@@ -34,6 +34,7 @@ opts = Slop.parse :help => true do
     on :focus=, 'Specify particular tests to run', :as => Array, :default => []
     on :clobber, 'Remove any generated file'
     on :'skip-build', 'Do not build the iOS binary'
+    on :bundle=, 'The app bundle identifier to test'
     on :configuration=, 'The build configruation to use (e.g., --configuration=Release)', :default => 'Debug'
     on :'sdk-version=', 'The SDK version to use (e.g., --sdk-version=6.1)'
     on :verbose, 'Be verbose'

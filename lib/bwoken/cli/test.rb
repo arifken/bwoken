@@ -104,8 +104,22 @@ BANNER
       end
 
       def test
+
+        bundle_id = options[:bundle]
+        app_dir = Build.app_dir(options[:simulator])
+
+        if bundle_id != nil
+          # if the app package does not exist, create it now
+          unless File.directory?(app_dir)
+            FileUtils.mkdir_p(app_dir)
+          end
+
+          # Create an Info.plist file with the specified bundle ID
+          Device.update_bundle_id(bundle_id)
+        end
+
         ScriptRunner.new do |s|
-          s.app_dir = Build.app_dir(options[:simulator])
+          s.app_dir = app_dir
           s.family = options[:family]
           s.focus = options[:focus]
           s.formatter = options[:formatter]
