@@ -37,8 +37,6 @@ module Bwoken
       end
 
       def update_bundle_id bundle_id
-        puts plist_file
-        puts bundle_id
         system_cmd = lambda { |command| Kernel.system "#{plist_buddy} -c '#{command}' \"#{plist_file}\"" }
         system_cmd["Delete :CFBundleIdentifier"]
         system_cmd["Add :CFBundleIdentifier string #{bundle_id}"]

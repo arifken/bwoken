@@ -1,6 +1,8 @@
 module Bwoken
   class Formatter
 
+    attr_accessor :pending_log
+
     class << self
       def format stdout
         new.format stdout
@@ -41,12 +43,20 @@ module Bwoken
           _on_fail_callback(line)
         elsif tokens[3] =~ /Error/
           _on_error_callback(line)
+        elsif tokens[3] =~ /^logElementTree/
+          _on_debug_callback(line)
+          self.pending_log = '' if self.pending_log == nil
+          self.pending_log << "#{line.chomp}"
         else
           _on_debug_callback(line)
         end
+      elsif line =~ /^\s+$/ && self.pending_log
+        _on_log_callback(self.pending_log)
+        self.pending_log = nil
       elsif line =~ /Instruments Trace Complete/
         _on_complete_callback(line)
       else
+        self.pending_log << "\n    #{line.chomp}" if self.pending_log
         _on_other_callback(line)
       end
       exit_status

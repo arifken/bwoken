@@ -71,5 +71,9 @@ module Bwoken
     on :other do |line|
       nil
     end
+
+    on :log do |line|
+      puts line
+    end
   end
 end
